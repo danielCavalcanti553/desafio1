@@ -2,15 +2,21 @@ package com.b2wproject.sistema.dto;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotEmpty;
+
 import com.b2wproject.sistema.domain.Planeta;
 
 public class PlanetaDTO  implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	private String id;
+	@NotEmpty(message="Nome é obrigatório")
 	private String nome;
+	@NotEmpty(message="Clima é obrigatório")
 	private String clima;
+	@NotEmpty(message="Terreno é obrigatório")
 	private String terreno;
+
 	private Integer filmes;
 	
 	public PlanetaDTO() {

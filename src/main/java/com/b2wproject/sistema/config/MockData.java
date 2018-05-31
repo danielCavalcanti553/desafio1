@@ -22,9 +22,10 @@ public class MockData implements CommandLineRunner{
 	public void run(String... args) throws Exception {
 		
 		planetaRepository.deleteAll();
-		Planeta p1 = new Planeta(null,"Terra","Tropical","Tropical Terreno",1);
-		Planeta p2 = new Planeta(null,"Marte","Árido","Árido Terreno",2);
-		planetaRepository.saveAll(Arrays.asList(p1,p2));
+		Planeta p1 = new Planeta(null,"Terra","Temperate","Forests, mountains, lakes",0);
+		Planeta p2 = new Planeta(null,"Marte","Arid","rock, desert, mountain",0);
+		Planeta p3 = new Planeta(null,"Naboo","Temperate","Grassy hills, swamps, forests, mountains",4);
+		planetaRepository.saveAll(Arrays.asList(p1,p2,p3));
 		
 	}
 

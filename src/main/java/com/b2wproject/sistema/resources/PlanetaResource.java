@@ -4,7 +4,10 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,10 +30,15 @@ public class PlanetaResource {
 	private PlanetaService planetaService;
 	
 	@RequestMapping(method=RequestMethod.GET)
-	public ResponseEntity<List<PlanetaDTO>> findAll(){
+	public ResponseEntity<Page<PlanetaDTO>> findAll(
+			@RequestParam(value="page", defaultValue="0") Integer page, 
+			@RequestParam(value="linesPerPage", defaultValue="24") Integer linesPerPage, 
+			@RequestParam(value="order", defaultValue="nome") String orderBy, 
+			@RequestParam(value="direction", defaultValue="ASC") String direction
+			){
 		
-		List<Planeta> list = planetaService.findAll();
-		List<PlanetaDTO> dto = list.stream().map(obj -> new PlanetaDTO(obj)).collect(Collectors.toList());
+		Page<Planeta> list = planetaService.findAll(page, linesPerPage, orderBy, direction);
+		Page<PlanetaDTO> dto = list.map(obj -> new PlanetaDTO(obj));
 		return ResponseEntity.ok().body(dto);
 	}
 	
@@ -41,8 +49,7 @@ public class PlanetaResource {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
-	public ResponseEntity<Void> insert(@RequestBody PlanetaDTO dto){
-		
+	public ResponseEntity<Void> insert(@Valid @RequestBody PlanetaDTO dto){
 		Planeta planeta = planetaService.insert(dto.fromPlaneta());
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(planeta.getId()).toUri();
 		return ResponseEntity.created(uri).build();
@@ -55,11 +62,18 @@ public class PlanetaResource {
 	}
 	
 	@RequestMapping(value="/search",method=RequestMethod.GET)
-	public ResponseEntity<List<PlanetaDTO>> findByName(@RequestParam(value="nome", defaultValue="") String nome){
+	public ResponseEntity<Page<PlanetaDTO>> findByName(
+			@RequestParam(value="nome", defaultValue="") String nome,
+			@RequestParam(value="page", defaultValue="0") Integer page, 
+			@RequestParam(value="linesPerPage", defaultValue="12")Integer linesPerPage, 
+			@RequestParam(value="order", defaultValue="name")String order, 
+			@RequestParam(value="direction", defaultValue="ASC")String direction
+			
+			){
 		
 		nome = URLDecode.decodeParam(nome);
-		List<Planeta> list = planetaService.findByNome(nome);
-		List<PlanetaDTO> dto = list.stream().map(obj -> new PlanetaDTO(obj)).collect(Collectors.toList());
+		Page<Planeta> list = planetaService.search(nome, page, linesPerPage, order, direction);
+		Page<PlanetaDTO> dto = list.map(obj -> new PlanetaDTO(obj));
 		return ResponseEntity.ok().body(dto);
 	}
 	

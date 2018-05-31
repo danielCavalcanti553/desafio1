@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -28,8 +31,9 @@ public class PlanetaService {
 	@Autowired
 	private PlanetaRepository planetaRepository;
 
-	public List<Planeta> findAll() {
-		return planetaRepository.findAll();
+	public Page<Planeta> findAll(Integer page, Integer linesPerPage, String order, String direction) {
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), order);
+		return planetaRepository.findAll(pageRequest);
 	}
 
 	public Planeta findById(String id) {
@@ -59,10 +63,7 @@ public class PlanetaService {
 		planetaRepository.deleteById(id);
 	}
 
-	public List<Planeta> findByNome(String nome) {
-		return planetaRepository.findByNomeContainingIgnoreCase(nome);
-	}
-
+	
 	public Integer searchFilms(String namePlanet) throws IOException {
 
 		Integer qtdFilmes = 0;
@@ -85,5 +86,16 @@ public class PlanetaService {
 		}
 
 		return qtdFilmes;
+	}
+	
+	public Page<Planeta> search(
+			String nome, 
+			Integer page, 
+			Integer linesPerPage, 
+			String order,
+			String direction) {
+		
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), order);
+		return planetaRepository.findByNomeContainingIgnoreCase(nome,pageRequest);
 	}
 }
