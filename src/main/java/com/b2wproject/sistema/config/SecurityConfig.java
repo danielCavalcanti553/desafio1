@@ -41,17 +41,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	// URL GET Liberadas sem login
 	private static final String[] PUBLIC_MATCHERS_GET = {
-			"/produtos/**",
-			"/categorias/**",
-			"/clientes/**",
-			"/pedidos/**"
+			"/planetas/**"
 	};
 	
 	// URL POST Liberadas sem login
 	private static final String[] PUBLIC_MATCHERS_POST = {
-			"/clientes",
-			"/auth/forgot**",
-			"/pedidos/**"
+			"/planetas/**"
 	};
 
 	@Override
