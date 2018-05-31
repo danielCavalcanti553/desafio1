@@ -42,6 +42,7 @@ public class PlanetaResource {
 	
 	@RequestMapping(method=RequestMethod.POST)
 	public ResponseEntity<Void> insert(@RequestBody PlanetaDTO dto){
+		
 		Planeta planeta = planetaService.insert(dto.fromPlaneta());
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(planeta.getId()).toUri();
 		return ResponseEntity.created(uri).build();

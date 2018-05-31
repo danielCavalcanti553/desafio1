@@ -20,8 +20,8 @@ public class MockData implements CommandLineRunner{
 	public void run(String... args) throws Exception {
 		
 		planetaRepository.deleteAll();
-		Planeta p1 = new Planeta(null,"Terra","Tropical","Tropical Terreno");
-		Planeta p2 = new Planeta(null,"Marte","Árido","Árido Terreno");
+		Planeta p1 = new Planeta(null,"Terra","Tropical","Tropical Terreno",1);
+		Planeta p2 = new Planeta(null,"Marte","Árido","Árido Terreno",2);
 		planetaRepository.saveAll(Arrays.asList(p1,p2));
 		
 	}

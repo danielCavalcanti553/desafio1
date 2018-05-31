@@ -14,20 +14,19 @@ public class Planeta implements Serializable{
 	private String nome;
 	private String clima;
 	private String terreno;
+	private Integer filmes;
 	
 	public Planeta() {
 	}
 
-	public Planeta(String id, String nome, String clima, String terreno) {
+	public Planeta(String id, String nome, String clima, String terreno,Integer filmes) {
 		super();
 		this.id = id;
 		this.nome = nome;
 		this.clima = clima;
 		this.terreno = terreno;
+		this.setFilmes(filmes);
 	}
-
-
-
 
 	public String getId() {
 		return id;
@@ -84,6 +83,14 @@ public class Planeta implements Serializable{
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+
+	public Integer getFilmes() {
+		return filmes;
+	}
+
+	public void setFilmes(Integer filmes) {
+		this.filmes = filmes;
 	}
 	
 	

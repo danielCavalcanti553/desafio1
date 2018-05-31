@@ -1,40 +1,89 @@
 package com.b2wproject.sistema.service;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.b2wproject.sistema.domain.Planeta;
 import com.b2wproject.sistema.repository.PlanetaRepository;
 import com.b2wproject.sistema.service.exception.ObjectNotFoundException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class PlanetaService {
-	
+
 	@Autowired
 	private PlanetaRepository planetaRepository;
 
-	public List<Planeta> findAll(){
+	public List<Planeta> findAll() {
 		return planetaRepository.findAll();
 	}
-	
+
 	public Planeta findById(String id) {
 		Optional<Planeta> obj = planetaRepository.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado"));
 	}
-	
+
 	public Planeta insert(Planeta obj) {
+		
+		obj.setFilmes(0);
+		
+		try {
+			obj.setFilmes(searchFilms(obj.getNome()));
+			System.out.println("------>" + searchFilms(obj.getNome()));
+
+		} catch (IOException e) {
+			e.printStackTrace();
+
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
 		return planetaRepository.insert(obj);
 	}
-	
+
 	public void delete(String id) {
 		findById(id);
 		planetaRepository.deleteById(id);
 	}
-	
-	public List<Planeta> findByNome(String nome){
+
+	public List<Planeta> findByNome(String nome) {
 		return planetaRepository.findByNomeContainingIgnoreCase(nome);
+	}
+
+	public Integer searchFilms(String namePlanet) throws IOException {
+
+		Integer qtdFilmes = 0;
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+		headers.add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0");
+		String url = "https://swapi.co/api/planets?search=" + namePlanet;
+
+		HttpEntity<String> entity = new HttpEntity<String>(headers);
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+		if (response.getStatusCode() == HttpStatus.OK) {
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode rootNode = mapper.readTree(response.getBody());
+			JsonNode locatedNode = rootNode.path("results").findValue("films");
+			List<String> list = mapper.readValue(locatedNode.toString(), new TypeReference<List<String>>() {
+			});
+			qtdFilmes = list.size();
+		}
+
+		return qtdFilmes;
 	}
 }
