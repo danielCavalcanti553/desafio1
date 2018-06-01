@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import com.b2wproject.sistema.domain.Planeta;
@@ -66,7 +68,7 @@ public class PlanetaService {
 	
 	public Integer searchFilms(String namePlanet) throws IOException {
 
-		Integer qtdFilmes = 0;
+		Integer qtdFilmes;
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -74,17 +76,32 @@ public class PlanetaService {
 		String url = "https://swapi.co/api/planets?search=" + namePlanet;
 
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
+		
+		try {
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
 		if (response.getStatusCode() == HttpStatus.OK) {
+			
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode rootNode = mapper.readTree(response.getBody());
 			JsonNode locatedNode = rootNode.path("results").findValue("films");
 			List<String> list = mapper.readValue(locatedNode.toString(), new TypeReference<List<String>>() {
 			});
 			qtdFilmes = list.size();
+			
+		}else {
+			qtdFilmes = 0;
 		}
+		
+		}catch(HttpClientErrorException e) {
+			throw new ObjectNotFoundException("Web service Star War não está acessível");
+		}catch(NullPointerException e) {
+			qtdFilmes = 0;
+		}catch(ResourceAccessException e){
+			throw new ObjectNotFoundException("Web service Star War não está acessível, verifique sua conexão");
 
+		}
+		
 		return qtdFilmes;
 	}
 	
