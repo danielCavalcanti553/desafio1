@@ -20,6 +20,8 @@ import com.b2wproject.sistema.dto.PlanetaDTO;
 import com.b2wproject.sistema.resources.util.URLDecode;
 import com.b2wproject.sistema.service.PlanetaService;
 
+import io.swagger.annotations.ApiOperation;
+
 @RestController
 @RequestMapping(value="/planetas")
 public class PlanetaResource {
@@ -27,6 +29,7 @@ public class PlanetaResource {
 	@Autowired
 	private PlanetaService planetaService;
 	
+	@ApiOperation(value="Busca paginada todos os planetas")
 	@RequestMapping(method=RequestMethod.GET)
 	public ResponseEntity<Page<PlanetaDTO>> findAll(
 			@RequestParam(value="page", defaultValue="0") Integer page, 
@@ -40,12 +43,14 @@ public class PlanetaResource {
 		return ResponseEntity.ok().body(dto);
 	}
 	
+	@ApiOperation(value="Encontra um planeta pelo ID")
 	@RequestMapping(value="/{id}",method=RequestMethod.GET)
 	public ResponseEntity<PlanetaDTO> findById(@PathVariable String id){	
 		Planeta planeta = planetaService.findById(id);
 		return ResponseEntity.ok().body(new PlanetaDTO(planeta));
 	}
 	
+	@ApiOperation(value="Cadastra um novo planeta - Insere o número de aparições no Filme StarWars verificado no webservice https://swapi.co")
 	@RequestMapping(method=RequestMethod.POST)
 	public ResponseEntity<Void> insert(@Valid @RequestBody PlanetaDTO dto){
 		Planeta planeta = planetaService.insert(dto.fromPlaneta());
@@ -53,12 +58,15 @@ public class PlanetaResource {
 		return ResponseEntity.created(uri).build();
 	}
 	
+	@ApiOperation(value="Exclui um planeta por ID")
 	@RequestMapping(value="/{id}",method=RequestMethod.DELETE)
 	public ResponseEntity<Void> delete(@PathVariable String id){	
 		planetaService.delete(id);
 		return ResponseEntity.noContent().build();
 	}
 	
+	
+	@ApiOperation(value="Pesquisa pagina por nome do planeta")
 	@RequestMapping(value="/search",method=RequestMethod.GET)
 	public ResponseEntity<Page<PlanetaDTO>> findByName(
 			@RequestParam(value="nome", defaultValue="") String nome,

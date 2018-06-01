@@ -23,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 import com.b2wproject.sistema.domain.Planeta;
 import com.b2wproject.sistema.repository.PlanetaRepository;
 import com.b2wproject.sistema.service.exception.ObjectNotFoundException;
+import com.b2wproject.sistema.service.exception.UnavailableServiceException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,7 +74,7 @@ public class PlanetaService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 		headers.add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0");
-		String url = "https://swapi.co/api/planets?search=" + namePlanet;
+		String url = "https://swapi.co/api/planetsVV?search=" + namePlanet;
 
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
 		
@@ -94,11 +95,11 @@ public class PlanetaService {
 		}
 		
 		}catch(HttpClientErrorException e) {
-			throw new ObjectNotFoundException("Web service Star War não está acessível");
+			throw new UnavailableServiceException("Web service Star War não está disponível");
 		}catch(NullPointerException e) {
 			qtdFilmes = 0;
 		}catch(ResourceAccessException e){
-			throw new ObjectNotFoundException("Web service Star War não está acessível, verifique sua conexão");
+			throw new UnavailableServiceException("Web service Star War não está disponível");
 
 		}
 		

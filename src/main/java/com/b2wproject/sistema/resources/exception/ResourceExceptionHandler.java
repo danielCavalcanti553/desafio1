@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.b2wproject.sistema.service.exception.ObjectNotFoundException;
+import com.b2wproject.sistema.service.exception.UnavailableServiceException;
 
 @ControllerAdvice
 public class ResourceExceptionHandler {
@@ -29,6 +30,14 @@ public class ResourceExceptionHandler {
 			err.addError(x.getField(), x.getDefaultMessage());
 		}
 		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(err);
+	}
+	
+	@ExceptionHandler(UnavailableServiceException.class)
+	public ResponseEntity<StandardError> unavailableService(UnavailableServiceException e, HttpServletRequest request){
+		
+		HttpStatus status = HttpStatus.SERVICE_UNAVAILABLE;
+		StandardError erro = new StandardError(System.currentTimeMillis(),status.value(),"Não Encontrado",e.getMessage(),request.getRequestURI());
+		return ResponseEntity.status(status).body(erro);
 	}
 	
 }
