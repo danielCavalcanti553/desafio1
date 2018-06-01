@@ -74,7 +74,7 @@ public class PlanetaService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 		headers.add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0");
-		String url = "https://swapi.co/api/planetsVV?search=" + namePlanet;
+		String url = "https://swapi.co/api/planets?search=" + namePlanet;
 
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
 		
